@@ -193,6 +193,10 @@ class EpsonEposPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         onDiscoveryTCP(call, result)
       }
 
+      "BT" -> {
+        onDiscoveryBT(call, result)
+      }
+
       "USB" -> {
         onDiscoveryUSB(call, result)
       }
@@ -226,6 +230,32 @@ class EpsonEposPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
   }
 
+  /**
+   * Discovery Printers via Bluetooth
+   */
+  private fun onDiscoveryBT(@NonNull call: MethodCall, @NonNull result: Result) {
+    printers.clear()
+    var filter = FilterOption()
+    filter.deviceType = Discovery.TYPE_PRINTER
+    filter.epsonFilter = Discovery.FILTER_NAME
+    var resp = EpsonEposPrinterResult("onDiscoveryBT", false)
+    try {
+      Discovery.start(context, filter, mDiscoveryListener)
+      Handler(Looper.getMainLooper()).postDelayed({
+        resp.success = true
+        resp.message = "Successfully!"
+        resp.content = printers
+        result.success(resp.toJSON())
+        stopDiscovery()
+      }, 7000)
+    } catch (e: Exception) {
+      Log.e("OnDiscoveryBT", "Start not working ${call.method}");
+      e.printStackTrace()
+      resp.success = false
+      resp.message = "Error while search printer"
+      result.success(resp.toJSON())
+    }
+  }
 
   /**
    * Discovery Printers via TCP/IP

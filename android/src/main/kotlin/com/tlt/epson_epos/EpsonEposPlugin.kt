@@ -530,9 +530,9 @@ class EpsonEposPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
               posY,
               width,
               height,
-              Printer.PARAM_DEFAULT,
-              Printer.PARAM_DEFAULT,
-              Printer.PARAM_DEFAULT,
+              Printer.COLOR_1,
+              Printer.MODE_MONO,
+              Printer.HALFTONE_DITHER,
               1.0,
               Printer.COMPRESS_AUTO
             )
@@ -578,7 +578,7 @@ class EpsonEposPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             }
           }
         }
-        "setTextFont" -> {
+        "addTextFont" -> {
           when (commandValue.toString()) {
             "FONT_A" -> {
               mPrinter!!.addTextFont(Printer.FONT_A)
@@ -597,20 +597,20 @@ class EpsonEposPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             }
           }
         }
-        "setTextSmooth" -> {
+        "addTextSmooth" -> {
           if (commandValue == true) {
               mPrinter!!.addTextSmooth(Printer.TRUE)
           } else {
               mPrinter!!.addTextSmooth(Printer.FALSE)
           }
         }
-        "setTextSize" -> {
+        "addTextSize" -> {
             val width = command["width"] as Int
             val height = command["height"] as Int
             Log.d(logTag, "setTextSize: width: $width, height: $height")
             mPrinter!!.addTextSize(width, height)
         }
-        "setTextStyle" -> {
+        "addTextStyle" -> {
           val reverse = command["reverse"] as Boolean?
           val ul = command["ul"] as Boolean?
           val em = command["em"] as Boolean?

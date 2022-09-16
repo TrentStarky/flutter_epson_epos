@@ -53,7 +53,7 @@ class EpsonEPOSCommand {
   }
 
   Map<String, dynamic> addTextSmooth(bool data) {
-    return {"id": "addTextFont", "value": data};
+    return {"id": "addTextSmooth", "value": data};
   }
 
   Map<String, dynamic> addTextSize(int width, int height) {

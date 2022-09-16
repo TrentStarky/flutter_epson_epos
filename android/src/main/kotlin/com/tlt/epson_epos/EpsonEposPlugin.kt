@@ -598,7 +598,7 @@ class EpsonEposPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
           }
         }
         "addTextSmooth" -> {
-          if (commandValue == true) {
+          if (commandValue as Boolean) {
               mPrinter!!.addTextSmooth(Printer.TRUE)
           } else {
               mPrinter!!.addTextSmooth(Printer.FALSE)

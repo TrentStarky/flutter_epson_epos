@@ -313,7 +313,7 @@ class EpsonEposPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     } catch (e: Exception) {
       e.printStackTrace()
       resp.success = false
-      resp.message = e.message ?: "Print error"
+      resp.message = printerStatusError()
       result.success(resp.toJSON())
     }
   }
@@ -355,7 +355,7 @@ class EpsonEposPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
           Log.e(logTag, "sendData Error", ex)
           ex.printStackTrace()
           resp.success = false
-          resp.message = e.message ?: "Print error"
+          resp.message = printerStatusError()
           result.success(resp.toJSON())
         } finally {
           disconnectPrinter()
@@ -365,7 +365,7 @@ class EpsonEposPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     } catch (e: Exception) {
       e.printStackTrace()
       resp.success = false
-      resp.message = e.message ?: "Print error"
+      resp.message = printerStatusError()
       result.success(resp.toJSON())
     }
   }
@@ -416,7 +416,7 @@ class EpsonEposPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     } catch (e: Exception) {
       e.printStackTrace()
       resp.success = false
-      resp.message = e.message ?: "Print error"
+      resp.message = printerStatusError()
       result.success(resp.toJSON())
     }
   }
@@ -757,13 +757,13 @@ class EpsonEposPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
   private fun getErrorMessage(errorKey: String, withNewLine: Boolean = true): String {
     var errorMes = when (errorKey) {
       "warn_receipt_near_end" -> {
-        "Roll paper is nearly end."
+        "Roll paper is nearly empty."
       }
       "warn_battery_near_end" -> {
         "Battery level of printer is low."
       }
       "err_no_response" -> {
-        "Please check the connection of the printer and the mobile terminal.\nConnection get lost."
+        "Please check the connection of the printer and the mobile terminal.\nConnection couldn't be established."
       }
       "err_cover_open" -> {
         "Please close roll paper cover."
@@ -781,7 +781,7 @@ class EpsonEposPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         "Then, If the printer doesn\'t recover from error, please cycle the power switch."
       }
       "err_unrecover" -> {
-        "Please cycle the power switch of the printer.\nIf same errors occurred even power cycled, the printer may out of orde"
+        "Please cycle the power switch of the printer.\nIf the same error occurs after the power is cycled, the printer may out of order."
       }
       "err_overheat" -> {
         "Please wait until error LED of the printer turns off. "

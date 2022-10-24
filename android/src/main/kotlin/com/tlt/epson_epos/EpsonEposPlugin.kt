@@ -313,7 +313,7 @@ class EpsonEposPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     } catch (e: Exception) {
       e.printStackTrace()
       resp.success = false
-      resp.message = "Print error"
+      resp.message = e.message ?: "Print error"
       result.success(resp.toJSON())
     }
   }
@@ -355,7 +355,7 @@ class EpsonEposPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
           Log.e(logTag, "sendData Error", ex)
           ex.printStackTrace()
           resp.success = false
-          resp.message = "Print error"
+          resp.message = e.message ?: "Print error"
           result.success(resp.toJSON())
         } finally {
           disconnectPrinter()
@@ -365,7 +365,7 @@ class EpsonEposPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     } catch (e: Exception) {
       e.printStackTrace()
       resp.success = false
-      resp.message = "Print error"
+      resp.message = e.message ?: "Print error"
       result.success(resp.toJSON())
     }
   }
@@ -416,7 +416,7 @@ class EpsonEposPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     } catch (e: Exception) {
       e.printStackTrace()
       resp.success = false
-      resp.message = "Print error"
+      resp.message = e.message ?: "Print error"
       result.success(resp.toJSON())
     }
   }

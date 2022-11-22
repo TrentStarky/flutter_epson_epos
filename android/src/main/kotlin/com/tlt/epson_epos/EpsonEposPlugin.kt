@@ -64,7 +64,7 @@ class EpsonEposPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
   /// when the Flutter Engine is detached from the Activity
-  private lateinit var channel: MethodChannel
+  private late init var channel: MethodChannel
   private var logTag: String = "Epson_ePOS"
   private lateinit var context: Context
   private lateinit var activity: Activity

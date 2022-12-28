@@ -1,7 +1,6 @@
 import Flutter
 import UIKit
 
-
 struct EpsonEposPrinterInfo: Codable {
     var ipAddress: String?
     var bdAddress: String?

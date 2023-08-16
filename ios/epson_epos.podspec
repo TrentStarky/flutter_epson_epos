@@ -22,6 +22,6 @@ A new flutter plugin project.
   s.swift_version = '5.0'
 
 
-  s.xcconfig = { 'OTHER_LDFLAGS' => '-framework libepos2' }
-  s.vendored_frameworks = 'Frameworks/libepos2.xcframework'
+#  s.xcconfig = { 'OTHER_LDFLAGS' => '-framework libepos2' }
+#  s.vendored_frameworks = 'Frameworks/libepos2.xcframework'
 end

@@ -663,6 +663,7 @@ class EpsonEposPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
       "TM_M10" -> Printer.TM_M10
       "TM_M30" -> Printer.TM_M30
       "TM_M30II" -> Printer.TM_M30II
+      "TM_M30III" -> Printer.TM_M30III
       "TM_M50" -> Printer.TM_M50
       "TM_P20" -> Printer.TM_P20
       "TM_P60" -> Printer.TM_P60

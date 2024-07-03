@@ -1,45 +1,29 @@
 #import "EpsonEposPlugin.h"
-//#if __has_include(<epson_epos/epson_epos-Swift.h>)
-//#import <epson_epos/epson_epos-Swift.h>
-//#else
-//// Support project import fallback if the generated compatibility header
-//// is not copied when this plugin is created as a library.
-//// https://forums.swift.org/t/swift-static-libraries-dont-copy-generated-objective-c-header/19816
-//#import "epson_epos-Swift.h"
-//#endif
-
-//@implementation EpsonEposPlugin
-//+ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-//  [SwiftEpsonEposPlugin registerWithRegistrar:registrar];
-//}
-//@end
 
 @implementation EpsonEposPlugin
-
-
 NSMutableArray <EpsonEposPrinterInfo*> *printers;
 Epos2Printer *mPrinter = NULL;
 NSString *mTarget = NULL;
 
 + (void)registerWithRegistrar:(nonnull NSObject<FlutterPluginRegistrar> *)registrar {
     FlutterMethodChannel* channel = [FlutterMethodChannel
-                                     methodChannelWithName:@"epson_epos"
-                                     binaryMessenger:[registrar messenger]];
+            methodChannelWithName:@"epson_epos"
+                  binaryMessenger:[registrar messenger]];
     EpsonEposPlugin* instance = [[EpsonEposPlugin alloc] init];
     [registrar addMethodCallDelegate:instance channel:channel];
 }
 
 + (void)registerWithRegistar:(NSObject<FlutterPluginRegistrar> *)registrar {
     FlutterMethodChannel* channel = [FlutterMethodChannel
-                                     methodChannelWithName:@"epson_epos"
-                                     binaryMessenger:[registrar messenger]];
+            methodChannelWithName:@"epson_epos"
+                  binaryMessenger:[registrar messenger]];
     EpsonEposPlugin* instance = [[EpsonEposPlugin alloc] init];
     [registrar addMethodCallDelegate:instance channel:channel];
 }
 
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-    
+
     if ([call.method  isEqual: @"onDiscovery"]) {
         [self onDiscovery:call result:result];
     } else if ([call.method  isEqual: @"onPrint"]) {
@@ -61,7 +45,7 @@ NSString *mTarget = NULL;
 - (void)onDiscovery:(FlutterMethodCall*)call result:(FlutterResult)result {
     NSDictionary *args = call.arguments;
     NSString *printType = args[@"type"];
-    
+
     if ([printType isEqual:@"TCP"]) {
         [self onDiscoveryTCP:call result:result];
     } else if ([printType isEqual:@"BT"]) {
@@ -84,7 +68,7 @@ NSString *mTarget = NULL;
     EpsonEposPrinterResult *resp;
     resp.type = @"onDiscoveryBT";
     resp.success = false;
-    
+
     // stop running discovery first
     int runningResult = EPOS2_SUCCESS;
 
@@ -99,9 +83,9 @@ NSString *mTarget = NULL;
     NSLog(@"[epos2] startDiscover");
 
     runningResult = [Epos2Discovery start:option delegate:self];
-    
+
     [NSThread sleepForTimeInterval:7.0f];
-    
+
     if (runningResult != EPOS2_SUCCESS) {
         NSLog(@"[epos2] Error in startDiscover()");
     } else {
@@ -109,7 +93,7 @@ NSString *mTarget = NULL;
         resp.message = @"Successfully!";
         resp.content = printers;
         @try {
-           // TODO: send result back
+            // TODO: send result back
         } @catch (NSException *exception) {
             // TODO: send failure message
         } @finally {
@@ -136,7 +120,7 @@ NSString *mTarget = NULL;
 //    NSString *series = args[@"series"];
 //    NSString *target = args[@"target"];
 //
-//    EpsonEposPrinterResult resp;
+//    EpsonEposPrinterResult *resp;
 //
 //    @try {
 //        if (![connectPrinter :target :series]) {
@@ -166,7 +150,7 @@ NSString *mTarget = NULL;
 //    NSInteger printDensity = [args[@"print_density"] integerValue];
 //    NSInteger printSpeed = [args[@"print_speed"] integerValue];
 //
-//    EpsonEposPrinterResult resp;
+//    EpsonEposPrinterResult *resp;
 //
 //    @try {
 //        if (![connectPrinter :target :series]) {
@@ -176,7 +160,7 @@ NSString *mTarget = NULL;
 //            [mPrinter clearCommandBuffer];
 //        } else {
 //            NSMutableDictionary *settingList;
-//            [settingList setObject:printSpeed forKey:EPOS2_PRINTER_SETTING_PRINTSPEED];
+//            [settingList setObject:printSpeed forKey:*EPOS2_PRINTER_SETTING_PRINTSPEED];
 //            settingList[EPOS2_PRINTER_SETTING_PRINTDENSITY] = printDensity == nil ? printDensity : EPOS2_PARAM_DEFAULT;
 //
 //            NSInteger pw = 80;
@@ -204,39 +188,39 @@ NSString *mTarget = NULL;
     NSString *type = args[@"type"];
     NSString *series = args[@"series"];
     NSString *target = args[@"target"];
-    
+
     NSArray *commands = args[@"commands"];
     EpsonEposPrinterResult *resp;
-    
+
     @try {
-            if (![self connectPrinter :target :series]) {
-                resp.success = false;
-                resp.message = @"Cannot connect to the printer.";
+        if (![self connectPrinter :target :series]) {
+            resp.success = false;
+            resp.message = @"Cannot connect to the printer.";
+            //TODO: return result
+            [mPrinter clearCommandBuffer];
+        } else {
+            [commands enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                [self onGenerateCommand: obj];
+            }];
+
+            @try {
+                Epos2PrinterStatusInfo *statusInfo = [mPrinter getStatus];
+                [mPrinter sendData:EPOS2_PARAM_DEFAULT];
+
+                resp.success = true;
+                resp.message = @"Printed \(target) \(series)";
                 //TODO: return result
-                [mPrinter clearCommandBuffer];
-            } else {
-                [commands enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                    [self onGenerateCommand: obj];
-                }];
-                
-                @try {
-                    Epos2PrinterStatusInfo *statusInfo = [mPrinter getStatus];
-                    [mPrinter sendData:EPOS2_PARAM_DEFAULT];
-                    
-                    resp.success = true;
-                    resp.message = @"Printed \(target) \(series)";
-                    //TODO: return result
-                } @catch (NSException *exception) {
-                    [self disconnectPrinter];
-                } @finally {
-                    // TODO: do something here
-                }
+            } @catch (NSException *exception) {
+                [self disconnectPrinter];
+            } @finally {
+                // TODO: do something here
             }
-        } @catch (NSException *exception) {
-            // TODO: send failure message
-        } @finally {
-                    // TODO: do something here
-                }
+        }
+    } @catch (NSException *exception) {
+        // TODO: send failure message
+    } @finally {
+        // TODO: do something here
+    }
 }
 
 + (void)onDiscovery:(Epos2DeviceInfo *)deviceInfo {
@@ -249,20 +233,20 @@ NSString *mTarget = NULL;
         printer.type = [NSString stringWithFormat:@"%d", deviceInfo.deviceType];
         printer.printType = [NSString stringWithFormat:@"%d", deviceInfo.deviceType];
         printer.target = deviceInfo.target;
-        
+
         NSInteger printerIndex = -1;
         [printers enumerateObjectsUsingBlock:^(EpsonEposPrinterInfo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if (obj.ipAddress == deviceInfo.ipAddress) {
                 __block NSInteger printerIndex = idx;
             }
         }];
-        
+
         if (printerIndex > -1) {
             [printers setObject:printer atIndexedSubscript:printerIndex];
         } else {
             [printers addObject:printer];
         }
-        
+
     }
 }
 
@@ -272,7 +256,7 @@ NSString *mTarget = NULL;
         mPrinter = [[Epos2Printer alloc] initWithPrinterSeries:printCons lang:0];
         mTarget = target;
     }
-    
+
     @try {
         Epos2PrinterStatusInfo *status = mPrinter.getStatus;
         if (status.online != EPOS2_TRUE) {
@@ -285,14 +269,14 @@ NSString *mTarget = NULL;
     } @finally {
         return true;
     }
-    
+
 }
 
 - (void)disconnectPrinter {
     if (mPrinter == nil) {
         return;
     }
-    
+
     @try {
         mPrinter.disconnect;
         mPrinter = nil;
@@ -305,7 +289,7 @@ NSString *mTarget = NULL;
 }
 
 - (void)onGenerateCommand:(NSDictionary *)command {
-    
+
 }
 
 - (void)onPtrReceive:(Epos2Printer *)printerObj code:(int)code status:(Epos2PrinterStatusInfo *)status printJobId:(NSString *)printJobId {
@@ -367,3 +351,4 @@ NSString *mTarget = NULL;
 }
 
 @end
+

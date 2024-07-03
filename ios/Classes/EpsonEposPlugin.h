@@ -1,5 +1,5 @@
 #import <Flutter/Flutter.h>
-#import <ePOS2.h>
+#import "libepos2.h"
 
 @interface EpsonEposPlugin : NSObject<FlutterPlugin, Epos2DiscoveryDelegate, Epos2PtrReceiveDelegate>
 

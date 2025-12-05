@@ -12,6 +12,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
+    namespace "com.tlt.epson_epos"
     compileSdkVersion 30
 
     sourceSets {

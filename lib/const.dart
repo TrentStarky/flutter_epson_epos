@@ -10,6 +10,7 @@ final List<EPSONSeries> epsonSeries = [
     "TM-m30II-S",
     "TM-m30II-SL"
   ]),
+  EPSONSeries(id: "TM_M30III", models: ["TM-m30III"]),
   EPSONSeries(id: "TM_M50", models: ["TM-m50"]),
   EPSONSeries(id: "TM_P20", models: ["TM-P20"]),
   EPSONSeries(id: "TM_P60", models: ["TM-P60 (Receipt/Peeler)"]),

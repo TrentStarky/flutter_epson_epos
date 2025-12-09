@@ -43,6 +43,7 @@ NSString *mTarget = NULL;
 
 
 - (void)onDiscovery:(FlutterMethodCall*)call result:(FlutterResult)result {
+    NSLog(@"onDiscovery");
     NSDictionary *args = call.arguments;
     NSString *printType = args[@"type"];
 
@@ -62,12 +63,10 @@ NSString *mTarget = NULL;
 }
 
 - (void)onDiscoveryBT:(FlutterMethodCall*)call result:(FlutterResult)result {
+    NSLog(@"onDiscoveryBT");
     printers.removeAllObjects;
     Epos2FilterOption *option = Epos2FilterOption.new;
     option.deviceType = EPOS2_TYPE_PRINTER;
-    EpsonEposPrinterResult *resp;
-    resp.type = @"onDiscoveryBT";
-    resp.success = false;
 
     // stop running discovery first
     int runningResult = EPOS2_SUCCESS;
@@ -84,19 +83,31 @@ NSString *mTarget = NULL;
 
     runningResult = [Epos2Discovery start:option delegate:self];
 
-    [NSThread sleepForTimeInterval:7.0f];
+    [NSThread sleepForTimeInterval:2.0f];
+
+    NSLog(@"[epos2] Finished Sleep");
 
     if (runningResult != EPOS2_SUCCESS) {
         NSLog(@"[epos2] Error in startDiscover()");
     } else {
-        resp.success = true;
-        resp.message = @"Successfully!";
-        resp.content = printers;
+        NSLog(@"[epos2] Success with discovery");
         @try {
             // TODO: send result back
+            NSString *type = [NSString stringWithFormat: @"\"type\": \"%@\",", @"onDiscoveryBT"];
+            NSString *success = [NSString stringWithFormat: @"\"success\": %@,", @"true"];
+            NSString *message = [NSString stringWithFormat: @"\"message\": \"%@\",", @"Successfully!"];
+            NSString *content = [NSString stringWithFormat: @"\"content\": %@", @"[]"];
+            NSString *finalResult = [NSString stringWithFormat: @"{%@%@%@%@}", type, success, message, content];
+
+            result(finalResult);
+
         } @catch (NSException *exception) {
+            NSLog(@"[epos2] Result exception");
+
             // TODO: send failure message
         } @finally {
+            NSLog(@"[epos2] Result finally");
+            [Epos2Discovery stop];
             // TODO: do something here
         }
     }
@@ -184,6 +195,7 @@ NSString *mTarget = NULL;
 }
 
 - (void)onPrint:(FlutterMethodCall *)call result:(__strong FlutterResult)result {
+    NSLog(@"onPrint");
     NSDictionary *args = call.arguments;
     NSString *type = args[@"type"];
     NSString *series = args[@"series"];
@@ -224,6 +236,9 @@ NSString *mTarget = NULL;
 }
 
 + (void)onDiscovery:(Epos2DeviceInfo *)deviceInfo {
+    NSLog(@"onDiscovery (epos2deviceInfo version)");
+    NSLog(@"%@", deviceInfo.deviceName);
+    
     if (deviceInfo.deviceName != NULL && deviceInfo.deviceName != nil && deviceInfo.deviceName != @"") {
         EpsonEposPrinterInfo *printer;
         printer.ipAddress = deviceInfo.ipAddress;
@@ -251,6 +266,7 @@ NSString *mTarget = NULL;
 }
 
 - (bool)connectPrinter:(NSString *)target :(NSString *)series {
+    NSLog(@"connectPrinter");
     NSInteger printCons = [self getPrinterConstant: series];
     if (mPrinter == NULL || mTarget == NULL) {
         mPrinter = [[Epos2Printer alloc] initWithPrinterSeries:printCons lang:0];
@@ -297,7 +313,7 @@ NSString *mTarget = NULL;
 }
 
 - (void)onDiscovery:(Epos2DeviceInfo *)deviceInfo {
-    //IDK
+    NSLog(@"onDiscovery - deviceINFO 1234321");
 }
 
 - (NSInteger)getPrinterConstant:(NSString *)series {

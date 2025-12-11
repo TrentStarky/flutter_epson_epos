@@ -39,8 +39,8 @@ class EpsonEPOS {
         final response = EpsonPrinterResponse.fromRawJson(rep);
         print(rep);
 
-        List<dynamic> prs = response.content;
-        if (prs.length > 0) {
+        List<dynamic>? prs = response.content;
+        if (prs != null && prs.length > 0) {
           return prs.map((e) {
             final modelName = e['model'];
             final modelSeries = _eposHelper.getSeries(modelName);
@@ -55,8 +55,13 @@ class EpsonEPOS {
             );
           }).toList();
         }
+
+        if (prs == null) {
+          throw Exception(response.toRawJson());
+        }
       } catch (e) {
-        throw e;
+        // TODO: Not correct but helpful with debugging at the moment
+        throw Exception('$e --- $rep');
       }
     }
     return [];

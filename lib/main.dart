@@ -67,6 +67,10 @@ class EpsonEPOS {
     return [];
   }
 
+  static Future<dynamic> onCancelDiscovery() async {
+    return await _channel.invokeMethod('onCancelDiscovery', null);
+  }
+
   static Future<dynamic> onPrint(
     EpsonPrinterModel printer,
     List<Map<String, dynamic>> commands,

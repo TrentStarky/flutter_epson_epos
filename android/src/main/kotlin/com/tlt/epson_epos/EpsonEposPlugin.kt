@@ -143,6 +143,9 @@ class EpsonEposPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         "setPrinterSetting" -> {
           setPrinterSetting(call, result)
         }
+        "onCancelDiscovery" -> {
+          onCancelDiscovery(call, result)
+        }
         else -> {
           Log.d(logTag, "Method: ${call.method} is not supported yet")
           result.notImplemented()
@@ -281,6 +284,12 @@ class EpsonEposPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
       resp.message = "Error while search printer"
       result.success(resp.toJSON())
     }
+  }
+
+  private fun onCancelDiscovery(@NonNull call: MethodCall, @NonNull result: Result) {
+    stopDiscovery()
+    var resp = EpsonEposPrinterResult("onCancelDiscovery", true)
+    result.success(resp.toJSON())
   }
 
   private fun onGetPrinterInfo(@NonNull call: MethodCall, @NonNull result: Result) {

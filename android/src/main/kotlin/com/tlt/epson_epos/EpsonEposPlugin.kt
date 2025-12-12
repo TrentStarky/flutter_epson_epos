@@ -38,7 +38,7 @@ interface JSONConvertable {
   fun toJSON(): String = Gson().toJson(this)
 }
 
-inline fun <reified T : JSONConvertable> String.toObject(): T = Gson().fromJson(this, T::class.java)
+//inline fun <reified T : JSONConvertable> String.toObject(): T = Gson().fromJson(this, T::class.java)
 
 
 class EpsonEposPrinterInfo(
@@ -443,7 +443,6 @@ class EpsonEposPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         printers.add(printer)
       }
     }
-
   }
 
   private val mPrinterSettingListener = object : PrinterSettingListener {
